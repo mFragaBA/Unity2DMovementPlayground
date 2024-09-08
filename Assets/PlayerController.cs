@@ -9,8 +9,10 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10f;
     Vector2 moveDirection = Vector2.zero;
+    bool disableInput = false;
 
     [SerializeField] Rigidbody2D rb;
+    [SerializeField] RespawnSystem respawnSystem;
 
     // Oops, shouldn't be using Update for movement. Instead it's better to use FixedUpdate for a more stable simulation.
     // Update is called once per frame
@@ -36,6 +38,26 @@ public class PlayerController : MonoBehaviour
 
     void OnMove(InputValue value)
     {
-        moveDirection = value.Get<Vector2>();
+        if (!disableInput)
+            moveDirection = value.Get<Vector2>();
+    }
+
+    public void Die()
+    {
+        respawnSystem.RespawnPlayer();
+    }
+
+    public void FreezePlayer()
+    {
+        rb.gravityScale = 0f;
+        rb.velocity = Vector2.zero;
+        disableInput = true;
+        moveDirection = Vector2.zero;
+    }
+
+    public void UnfreezePlayer()
+    {
+        rb.gravityScale = 1f;
+        disableInput = false;
     }
 }
